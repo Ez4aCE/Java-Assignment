@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title style="margin-top: 25px;">Customer List</title>
+    <button onclick="redirectToNewCustomer()" class="add-customer-button">Add New Customer</button>
+</head>
+<body>
+    <link href="https://fonts.googleapis.com/css?family=Indie+Flower|Overpass+Mono" rel="stylesheet">
+    <link href="customer_list.css" rel="stylesheet" >
+    <h1>Customer List</h1>
+    <div id="customerList" class="customer-table"></div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+            const proxyUrl = 'http://localhost:3000/getCustomerList';
+            const token = localStorage.getItem('access_token');
+            console.log(`Bearer ${token}`)
+            const requestData = {
+                token:token
+            };
+
+            fetch(proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to fetch customer list');
+                }
+            })
+            .then(data => {
+                console.log('Customer List:', data);
+                const customerListContainer = document.getElementById('customerList');
+                const table = document.createElement('table');
+                const tableHeader = `
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                `;
+                table.innerHTML = tableHeader;
+
+                data.forEach(customer => {
+                    const tableRow = `
+                        <tr>
+                            <td id="firstName-${customer.uuid}" contenteditable>${customer.first_name}</td>
+                            <td id="lastName-${customer.uuid}" contenteditable>${customer.last_name}</td>
+                            <td id="address-${customer.uuid}" contenteditable>${customer.address}</td>
+                            <td id="city-${customer.uuid}" contenteditable>${customer.city}</td>
+                            <td id="state-${customer.uuid}" contenteditable>${customer.state}</td>
+                            <td id="email-${customer.uuid}" contenteditable>${customer.email}</td>
+                            <td id="phone-${customer.uuid}" contenteditable>${customer.phone}</td>
+                            <td>
+                                <button class="edit-button" onclick="editCustomer('${customer.uuid}')">Edit</button>
+                                <button class="delete-button" onclick="deleteCustomer('${customer.uuid}')">Delete</button>
+
+                            </td>
+                        </tr>
+                    `;
+                    table.innerHTML += tableRow;
+                });
+
+                customerListContainer.appendChild(table);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+        function redirectToNewCustomer() {
+            window.location.href = 'addnewcustomer.html';
+        }
+        function editCustomer(uuid) {
+            console.log("edit clicked",uuid)
+            
+            const firstName = document.getElementById(`firstName-${uuid}`).textContent;
+            const lastName = document.getElementById(`lastName-${uuid}`).textContent;
+            const address = document.getElementById(`address-${uuid}`).textContent;
+            const city = document.getElementById(`city-${uuid}`).textContent;
+            const state = document.getElementById(`state-${uuid}`).textContent;
+            const email = document.getElementById(`email-${uuid}`).textContent;
+            const phone = document.getElementById(`phone-${uuid}`).textContent;
+
+            const editedData = {
+                cmd: 'update', 
+                uuid: uuid,
+                first_name: firstName,
+                last_name: lastName,
+                address: address,
+                city: city,
+                state: state,
+                email: email,
+                phone: phone
+            
+            };
+            const proxyUrl = 'http://localhost:3000/updateCustomer';
+            const token = localStorage.getItem('access_token');
+            const requestData = {
+                cmd: 'update',
+                uuid: uuid,
+                token: token,
+                data: editedData
+            };
+
+            fetch(proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    console.log('Customer data updated successfully');
+                    window.location.reload();
+                } else {
+                    throw new Error('Failed to update customer data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+            
+        }
+        function deleteCustomer(uuid) {
+            console.log("delete clicked",uuid)
+            const proxyUrl = 'http://localhost:3000/deleteCustomer';
+            const token = localStorage.getItem('access_token');
+            
+            const requestData = {
+                cmd: 'delete',
+                uuid: uuid,
+                token: token
+            };
+
+            fetch(proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    console.log('Customer deleted successfully');
+                    window.location.reload();
+                } else {
+                    throw new Error('Failed to delete customer');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+</script>
+</html>

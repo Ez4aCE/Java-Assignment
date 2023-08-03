@@ -1,0 +1,45 @@
+.add-customer-title {
+    text-align: center;
+    margin-top: 25px;
+    font-family: 'Indie Flower', cursive;
+}
+
+.add-customer-form {
+    max-width: 631px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: 'Overpass Mono', monospace;
+    display: grid;
+    grid-template-columns: repeat(2fr,1); 
+    grid-gap: 10px; 
+}
+
+
+.add-customer-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+
+.add-customer-form input {
+    width: 500px;
+    padding: 10px;
+    margin-right: 1px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.add-customer-button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    grid-column: span 2;
+}

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<link href="https://fonts.googleapis.com/css?family=Indie+Flower|Overpass+Mono" rel="stylesheet">
+<link href="login.css" rel="stylesheet" >
+<div id="wrapper">
+    <div class="main-content">
+        <div class="header" >
+
+        </div>
+        <div class="l-part">
+            <input id="username" placeholder="Username" class="input-1">
+            <div class="overlap-text">
+                <input id="password" type="password" placeholder="Password" class="input-2" >
+            </div>
+            <input type="button" id="loginButton" value="Log in" class="btn" (click)="login()">
+        </div>
+    </div>
+
+</div>
+<script>
+    document.getElementById("loginButton").addEventListener("click", function() {
+            const url = "http://localhost:3000/login";
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            
+            const data = {
+                login_id: username,
+                password: password
+            };
+            
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    throw new Error("Login failed");
+                }
+            })
+            .then(result => {
+                const accessToken = result.access_token;
+                localStorage.setItem("access_token", accessToken);
+                alert("Login successful! Access Token stored.");
+                window.location.href = "customer_list.html";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Login failed. Please try again.");
+            });
+        });
+</script>
+</body>
+</html>
